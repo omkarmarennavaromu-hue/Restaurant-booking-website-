@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elite Restaurant</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial;
+}
+
+body {
+    background: #0f0f0f;
+    color: white;
+    scroll-behavior: smooth;
+}
+
+/* NAV */
+nav {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+}
+
+nav h1 { color: #ff4d4d; }
+
+nav ul {
+    display: flex;
+    gap: 15px;
+    list-style: none;
+}
+
+nav ul li {
+    cursor: pointer;
+}
+
+/* HERO */
+.hero {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+}
+
+/* SECTION */
+section {
+    padding: 100px 20px;
+    text-align: center;
+}
+
+.grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.card {
+    background: #1c1c1c;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* CALL BOX */
+.call-box {
+    background: #111;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+button {
+    padding: 10px 15px;
+    background: #ff4d4d;
+    border: none;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.status {
+    margin-top: 10px;
+    opacity: 0.7;
+}
+
+@media(max-width: 768px){
+    .grid { flex-direction: column; }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<h1>Elite</h1>
+<ul>
+<li onclick="go('rooms')">Rooms</li>
+<li onclick="go('booking')">Booking</li>
+<li onclick="go('prices')">Prices</li>
+<li onclick="go('location')">Location</li>
+<li onclick="go('call')">AI</li>
+</ul>
+</nav>
+
+<div class="hero">
+<h1>Luxury Dining & Smart Booking</h1>
+</div>
+
+<section id="rooms">
+<h2>Rooms Available</h2>
+<div class="grid">
+<div class="card">Deluxe Room - Available</div>
+<div class="card">VIP Lounge - Available</div>
+<div class="card">Private Dining - Limited</div>
+</div>
+</section>
+
+<section id="booking">
+<h2>Booking</h2>
+<div class="card">
+<input id="name" placeholder="Your Name"><br><br>
+<input id="date" placeholder="Date"><br><br>
+<button onclick="book()">Book Now</button>
+<p id="bookStatus"></p>
+</div>
+</section>
+
+<section id="prices">
+<h2>Prices</h2>
+<div class="grid">
+<div class="card">Basic ₹999</div>
+<div class="card">Premium ₹1999</div>
+<div class="card">Luxury ₹3999</div>
+</div>
+</section>
+
+<section id="location">
+<h2>Location</h2>
+<div class="card">Bangalore, India</div>
+</section>
+
+<section id="call">
+<h2>AI Assistant</h2>
+<div class="call-box">
+<button onclick="startAI()">Start Talking</button>
+<div class="status" id="status">Click and speak</div>
+</div>
+</section>
+
+<script>
+function go(id){
+    document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
+
+/* BOOKING */
+function book(){
+    let name = document.getElementById("name").value;
+    let date = document.getElementById("date").value;
+
+    if(name && date){
+        document.getElementById("bookStatus").innerText =
+        "Booking confirmed for " + name + " on " + date;
+    } else {
+        document.getElementById("bookStatus").innerText =
+        "Please fill all details";
+    }
+}
+
+/* VOICE AI */
+function startAI(){
+    const status = document.getElementById("status");
+
+    const recognition = new(window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.start();
+
+    status.innerText = "Listening...";
+
+    recognition.onresult = function(event){
+        let text = event.results[0][0].transcript.toLowerCase();
+        status.innerText = "You: " + text;
+
+        let reply = getReply(text);
+
+        setTimeout(()=>{
+            status.innerText += "\nAI: " + reply;
+        },500);
+
+        let speech = new SpeechSynthesisUtterance(reply);
+        speechSynthesis.speak(speech);
+    }
+}
+
+/* SMART RESPONSES */
+function getReply(text){
+
+    if(text.includes("book")){
+        return "You can book a room by filling the booking form.";
+    }
+
+    if(text.includes("room")){
+        return "We have Deluxe, VIP Lounge and Private Dining rooms available.";
+    }
+
+    if(text.includes("price") || text.includes("cost")){
+        return "Prices start from 999 rupees and go up to 3999.";
+    }
+
+    if(text.includes("location") || text.includes("where")){
+        return "We are located in Bangalore city center.";
+    }
+
+    if(text.includes("menu") || text.includes("food")){
+        return "We serve Indian, Chinese and Italian dishes.";
+    }
+
+    return "Sorry, I didn't understand. Please ask about booking, rooms or prices.";
+}
+</script>
+
+</body>
+</html>
